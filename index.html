@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chelsea+Market&family=Pacifico&family=Permanent+Marker&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="./Dynamic-Word-Tag-Cloud-Plugin-For-jQuery-jQCloud/jqcloud/jqcloud.css">
+
+    <style>
+        body {
+            background-color: rgb(18, 169, 203);
+        }
+
+        h1,
+        h2,
+        h3,
+        form,
+        input,
+        button,
+        p,
+        .bandStyles {
+            font-family: 'Chelsea Market', cursive;
+            margin: 0;
+            padding: 0;
+            color: white;
+        }
+
+        h1 {
+            font-size: 50px;
+            margin: 20px 0 5px 0;
+
+        }
+
+        h2 {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size    : 15px;
+            margin-bottom: 15px;
+        }
+
+        h3 span {
+            display: block;
+        }   
+        
+        a {
+            text-decoration: none;
+            color          : rgb(11, 85, 102);
+        }
+
+        p {
+            font-size    : 14px;
+            margin-bottom: 20px;
+        }
+
+        img {
+            object-fit: contain;
+            width: 80%;
+            margin-bottom: 50px;
+        }
+
+        img.hipster {
+            max-width: 60%;
+            height: auto;
+        }
+
+        .container h2,
+        .container p {
+            color: black;
+        }
+
+        .flexMain {
+            display: flex;
+            width: 85%;
+            margin: 0 auto;
+        }
+
+        .bandStyles {
+            font-size: 30px;
+            color: white;
+            text-shadow: 1px 1px gainsboro;
+        }
+
+        .musicSearch {
+            width: 25%;
+            min-width: 300px;
+            margin: 40px 40px 0 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .searchLine {
+            display: flex;
+            margin-bottom: 25px;
+        }
+
+        input[type=text] {
+            width: 85%;
+            margin-right: 3px;
+            background-color:  rgb(18, 169, 203);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border-top-style: none;
+            border-right-style: none;
+            border-left-style: none;
+            border-bottom-style: dotted;
+        }
+
+        @keyframes slideInFromBottom {
+            0% {
+                transform: translateY(+200%);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        } 
+
+        
+
+        button {
+            padding: 0px 3px;
+            background: white;
+            color: rgb(18, 169, 203);
+            border-radius: 2px;
+            border: 2px solid white;
+            box-shadow: 2px 2px 2px slategrey;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        
+        .resultResponse h3 {
+            text-transform: uppercase;
+            color:  rgb(180, 229, 240)
+        }
+
+        .responseBox {
+            border: 3px solid rgb(180, 229, 240);
+            padding: 20px;
+            width: 80%;
+        }
+
+        .bandHilite {
+            font-size: 36px;
+            color:  rgb(180, 229, 240)
+        }
+
+        div.similar {
+            margin: 50px auto;
+            width: 700px;
+        }
+
+        div.container {
+            color: #000;
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+            padding: 25px 30px;
+            background-color: lightcyan;
+            border-radius: 4px;
+            outline: 4px solid #fff;
+            outline-offset: 13px;
+            text-align: center;
+            animation: 1.25s ease-out 0s 1 slideInFromBottom;
+        }
+
+        .youtube {
+            text-align: center;
+        }
+
+        span.rightArrow {
+            display: block;
+        }
+
+        a:hover,
+        .rightArrow:hover {
+            color: slategrey;
+        }
+        
+    </style>
+</head>
+
+<body>
+
+    <section class ="flexMain">
+        <div class="musicSearch">
+            <h1>MUSIC-<span>MATCHER</span></h1>
+            <img src="./assets/squiggle.png">
+        <form>
+            <label for="text"><h3><span>Enter your favourite band +</span>we'll find others you might like!</h3></label>
+            <div class = "searchLine">
+                <input type="text" id="bandSearch" autofocus="autofocus" placeholder="musician/band">
+                <button type ="submit">♫</button>
+            </div>
+        </form>
+        <div class="resultResponse">
+            </div>
+        </div>
+        <div class="similar">
+            <!-- container will be added here after search -->
+        </div>
+    </section>
+
+    <script src='https://code.jquery.com/jquery-3.4.0.min.js' integrity='sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=' crossorigin='anonymous'></script>
+
+    <script>
+
+        const app = {};
+        app.API_KEY = '377183-similarb-AOY1QJ9Q';
+
+        const $form = $('form');
+        const $similar = $(".similar");
+        const $musicSearch = $('.musicSearch');
+        const $resultResponse = $('.resultResponse');
+        const $h2 = $('h2');
+        let modifiedArray = [];
+
+        app.randomBands = (similarBands) => {
+            
+            // CLEAR modifiedArray for each new search
+            modifiedArray.length = 0;
+            
+            // REMOVE BANDS WITHOUT ANY PROFILES
+            for (let i = 0; i < similarBands.Results.length; i++) {
+                if (similarBands.Results[i].wTeaser) {
+                    modifiedArray.push(i);
+                };
+            };
+                
+            console.log(modifiedArray); 
+            
+            // START AT THE FIRST ITEM IN THE ARRAY
+            let i = 0;
+
+            app.displayBands = () => {
+
+                const similarName = similarBands.Results[modifiedArray[i]].Name;
+                const similarDescrip = similarBands.Results[modifiedArray[i]].wTeaser;
+                const similarYT = similarBands.Results[modifiedArray[i]].yUrl;
+
+                // DISPLAYS INFO OF RANDOMLY SELECTED SIMILAR BAND
+                $similar.append(`
+                        <div class = "container">
+                        <h2>${similarName}<span class = "rightArrow"> >> </span></h2>
+                        <p>${similarBands.Results[modifiedArray[i]].wTeaser}</p>
+                        </div>`);
+
+                // declare here as it's the first time it appears
+                const $rightArrow = $('.rightArrow');
+
+                // GO THROUGH ENTIRE ARRAY OR MAX 10 BANDS ON RIGHT CLICK
+                $rightArrow.on('click', function() {
+
+                    $similar.empty();
+                    i = i+1;
+                    if (i === modifiedArray.length || i === 10) {
+                        $similar.append(`
+                            <div class="container">
+                            <h2>GREEDY, MUCH?</h2>
+                            <p>Try another band, you hipster!</p>
+                            <div>
+                                <img src = "./assets/musicDude.jpg" alt = "hip guy" class = "hipster">
+                                <span><p>
+                            Photo by Andrea Piacquadio from Pexels</p>
+                            </div>`);
+                    } else {
+                        app.displayBands();
+                    };
+                });
+                
+                const $container = $('.container');
+                // DISPLAYS YOUTUBE EMBED (if avail)
+                // NOTE: some videos "are not available" -- research says newer videos from official accounts with ads can only be played from public domains, so hoping this will work if I ever publish it!  
+                if (similarYT) {
+                    $container.append(`
+                    <div class="youtube">
+                        <a href="${similarYT}"><iframe width="560" height="315" src="${similarYT}" frameborder="0"></iframe></a>
+                    </div>`);
+                };  
+            };
+        };
+
+        app.getSimilar = (band) => {
+            $.ajax({
+                url: `https://tastedive.com/api/similar`,
+                method: 'GET',
+                dataType:'jsonp',
+                data: {
+                    q: band,
+                    type: 'music',
+                    info: 1,
+                    limit: 25,
+                    k: app.API_KEY
+                    }
+                }).then(function(result){
+                    $similar.empty();
+                    $resultResponse.empty();
+
+                    if (result.Similar.Info[0].Type !== "music" || result.Similar.Results < 5) {
+
+                        $resultResponse.append(`
+                            <div class = "responseBox">
+                                <h3>Sorry, no sign of <span class = "bandHilite">"${band}"</span>in our database!</h3>
+                            </div>
+                            `);
+
+                    } else {
+
+                        $resultResponse.append(`
+                            <div class = "responseBox">
+                                <h3>SIMILAR TO <span class = "bandHilite">${band}</span></h3>
+                            </div>`);
+
+                        console.log(result.Similar);
+                        app.randomBands(result.Similar);
+                        app.displayBands();
+                    };
+                });
+        };
+
+        app.init = () => {       
+            $form.on('submit', (e) => {
+                e.preventDefault();
+                const bandName = $('input[type=text]').val();
+                console.log(bandName);
+                app.getSimilar(bandName);
+                $('input[type=text]').val(' ');
+            });
+        };
+
+        $(() => app.init());
+
+    </script>
+</body>
+</html>
