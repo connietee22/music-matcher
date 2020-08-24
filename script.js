@@ -14,7 +14,7 @@ const app = {};
     modifiedArray.length = 0;
 
         // REMOVE BANDS WITHOUT ANY PROFILES
-        for (let i = 0; i < similarBands.Results.length; {
+        for (let i = 0; i < similarBands.Results.length; i++) {
             if (similarBands.Results[i].wTeaser) {
     modifiedArray.push(i);
             };
